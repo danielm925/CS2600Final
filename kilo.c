@@ -258,7 +258,7 @@ int getWindowSize(int *rows, int *cols)
 }
 
 /* syntax highlighting */
-int is_seperator(int c)
+int is_separator(int c)
 {
     return isspace(c) || c == '\0' || strchr(",.()+-/*=~%<>[];", c) != NULL;
 }
@@ -357,7 +357,7 @@ void editorUpdateSyntax(erow *row)
 
         if (E.syntax->flags & HL_HIGHLIGHT_NUMBERS)
         {
-            if (isdigit(c) && (prev_sep || prev_hl == HL_NUMBER) ||
+            if ((isdigit(c) && (prev_sep || prev_hl == HL_NUMBER)) ||
                 (c == '.' && prev_hl == HL_NUMBER))
             {
                 row->hl[i] = HL_NUMBER;
@@ -390,11 +390,10 @@ void editorUpdateSyntax(erow *row)
                 continue;
             }
         }
-
         prev_sep = is_separator(c);
         i ++;
     }
-    
+
     int changed = (row->hl_open_comment != in_comment);
     row->hl_open_comment = in_comment;
     if (changed && row->idx + 1 < E.numrows)
@@ -662,7 +661,6 @@ void editorOpen(char *filename)
     char *line = NULL;
     ssize_t linecap = 0;
     ssize_t linelen;
-    linelen = getline(&line, &linecap, fp);
     while ((linelen = getline(&line, &linecap, fp)) != -1)
     {
         while (linelen > 0 && (line[linelen - 1] == '\n' || line[linelen -1] == '\r'))
